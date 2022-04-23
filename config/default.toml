@@ -1,0 +1,18 @@
+[Bot]
+    token = "INSERT_TOKEN_HERE"
+    prefix = "!"
+    update_interval = 60
+
+[Servers]
+    [Servers.tf2]
+    name = "Team Fortress 2"
+    channel = "123456789"
+    hostname = "127.0.0.1"
+    game = "tf2"
+    port = 27015
+    colour = "#CF7336"
+    country = "???"
+    public_hostname = "tf2.example.com"
+    public_port = 27015
+    steamid = "440"
+    direct_join = true
