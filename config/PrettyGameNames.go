@@ -14,7 +14,7 @@ var PrettyGameNames = make(map[string]string)
 // GetGameNames fetches the game display names from the gamedig GitHub repo
 func GetGameNames() {
 	cacheItem, exists := GlobalCache.Get("PrettyGameNames")
-	if !exists {
+	if exists {
 		PrettyGameNames = cacheItem.(map[string]string)
 		return
 	}

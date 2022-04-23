@@ -4,13 +4,11 @@ import (
 	"fmt"
 	"github.com/BurntSushi/toml"
 	"github.com/patrickmn/go-cache"
+	"log"
 	"os"
-
-	_ "embed"
 )
 
-// go:embed default.toml
-var defaultConfig string
+var DefaultConfig string
 
 var GlobalCache *cache.Cache
 
@@ -54,14 +52,18 @@ func ReadConfig() Config {
 			fmt.Println("Error creating config file: config.toml")
 			panic(er2)
 		}
-		_, er3 := file.WriteString(defaultConfig)
+		_, er3 := file.WriteString(DefaultConfig)
 		if er3 != nil {
 			panic(er3.Error())
 		}
+		file.Sync()
 		er4 := file.Close()
 		if er4 != nil {
 			panic(er4.Error())
 		}
+		log.Println("Created config file: config.toml, please fill in your token and other values")
+		log.Println(DefaultConfig)
+		os.Exit(0)
 	}
 	_, er2 := toml.DecodeFile("config.toml", &conf)
 	if er2 != nil {

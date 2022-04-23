@@ -50,7 +50,7 @@ func RefreshServerStatus(s *discordgo.Session) {
 			isOnline = true
 		}
 		c, er2 := s.ChannelMessages(server.ChannelID, 20, "", "", "")
-		if er2 == nil {
+		if er2 != nil {
 			log.Println("Failed to get messages: ", er2)
 		}
 		for _, i2 := range c {

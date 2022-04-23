@@ -10,9 +10,16 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	_ "embed"
 )
 
+//go:embed config/default.toml
+var defaultConfig string
+
 func main() {
+
+	config.DefaultConfig = defaultConfig
 
 	config.GlobalCache = cache.New(5*time.Minute, 10*time.Minute)
 
@@ -37,6 +44,8 @@ func main() {
 			discord.RefreshServerStatus(s)
 		}
 	}()
+
+	discord.RefreshServerStatus(s)
 
 	// Clean exit on ctrl+c
 	fmt.Println("Bot is now running.  Press CTRL-C to exit.")

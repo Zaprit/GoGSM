@@ -10,7 +10,7 @@
     hostname = "127.0.0.1"
     game = "tf2"
     port = 27015
-    colour = "#CF7336"
+    colour = 0xCF7336
     country = "???"
     public_hostname = "tf2.example.com"
     public_port = 27015
