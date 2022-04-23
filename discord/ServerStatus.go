@@ -121,7 +121,7 @@ func RefreshServerStatus(s *discordgo.Session) {
 
 			embedFields = append(embedFields, &discordgo.MessageEmbedField{
 				Name:   "Players",
-				Value:  strconv.Itoa(len(resp.Players)) + "/" + maxPlayers,
+				Value:  strconv.Itoa(resp.Players) + "/" + maxPlayers,
 				Inline: true,
 			})
 			if !server.HideMap {
