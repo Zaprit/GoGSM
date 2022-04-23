@@ -34,7 +34,7 @@ type Server struct {
 	Port           int    `toml:"port"`
 	Colour         int    `toml:"colour"`
 	PublicHostname string `toml:"public_hostname"`
-	ShowMap        bool   `toml:"show_map"`
+	HideMap        bool   `toml:"hide_map"`
 	ChannelID      string `toml:"channel"`
 	Country        string `toml:"country"`
 	SteamID        string `toml:"steamid"`

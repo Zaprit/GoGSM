@@ -39,7 +39,9 @@ func GetGameNames() {
 	for _, line := range strings.Split(string(gameNames), "\n") {
 		if len(line) > 0 && !strings.HasPrefix(line, "#") {
 			parts := strings.Split(line, "|")
-			PrettyGameNames[parts[0]] = parts[1]
+			for _, altNames := range strings.Split(parts[0], ",") {
+				PrettyGameNames[strings.ToLower(altNames)] = parts[1]
+			}
 		}
 	}
 

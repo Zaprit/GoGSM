@@ -22,6 +22,20 @@ var goGSMEmbedFooter = discordgo.MessageEmbedFooter{
 	Text: "GoGSM 1.0",
 }
 
+func cacheContainsMessageID(id string) bool {
+	for _, v := range config.GlobalCache.Items() {
+		switch v.Object.(type) {
+		case string:
+			if v.Object.(string) == id {
+				return true
+			}
+		default:
+			continue
+		}
+	}
+	return false
+}
+
 // RefreshServerStatus refreshes the status embeds for all servers
 // TODO: This is too monolithic. It should be broken up into smaller functions
 func RefreshServerStatus(s *discordgo.Session) {
@@ -61,6 +75,9 @@ func RefreshServerStatus(s *discordgo.Session) {
 			if message, ok := config.GlobalCache.Get(name); ok {
 				messageToEdit = message.(string)
 			} else {
+				if cacheContainsMessageID(i2.ID) {
+					continue
+				}
 				err := s.ChannelMessageDelete(server.ChannelID, i2.ID)
 				if err != nil {
 					log.Println("Error deleting message:", err)
@@ -83,9 +100,15 @@ func RefreshServerStatus(s *discordgo.Session) {
 				game = prettyGame
 			}
 
+			// TODO: This is really hacky but minecraft has forced me to do this
+			serverName := resp.Name
+			if serverName[0] == 239 {
+				serverName = resp.Name[4:]
+			}
+
 			embedFields = append(embedFields, &discordgo.MessageEmbedField{
 				Name:   "Name",
-				Value:  resp.Name,
+				Value:  serverName,
 				Inline: true,
 			})
 			embedFields = append(embedFields, &discordgo.MessageEmbedField{
@@ -101,12 +124,13 @@ func RefreshServerStatus(s *discordgo.Session) {
 				Value:  strconv.Itoa(len(resp.Players)) + "/" + maxPlayers,
 				Inline: true,
 			})
-			embedFields = append(embedFields, &discordgo.MessageEmbedField{
-				Name:   "Map",
-				Value:  "`" + resp.Map + "`",
-				Inline: true,
-			})
-
+			if !server.HideMap {
+				embedFields = append(embedFields, &discordgo.MessageEmbedField{
+					Name:   "Map",
+					Value:  "`" + resp.Map + "`",
+					Inline: true,
+				})
+			}
 			embedFields = append(embedFields, &spacer)
 
 			hostname := server.Hostname
