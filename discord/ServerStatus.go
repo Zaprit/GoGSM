@@ -12,51 +12,22 @@ import (
 
 const zws = "\u200B"
 
-type EmbedAuthor struct {
-	Name    string `json:"name"`
-	Url     string `json:"url"`
-	IconUrl string `json:"icon_url"`
-}
-
-type EmbedField struct {
-	Name   string `json:"name"`
-	Value  string `json:"value"`
-	Inline bool   `json:"inline"`
-}
-
 var spacer = discordgo.MessageEmbedField{
 	Name:   zws,
 	Value:  zws,
 	Inline: true,
 }
 
-type StatusEmbed struct {
-	Author      EmbedAuthor   `json:"author"`
-	Color       int           `json:"color"`
-	Title       string        `json:"title"`
-	Description string        `json:"description"`
-	Fields      []*EmbedField `json:"fields"`
-	Thumbnail   struct {
-		Url string `json:"url"`
-	} `json:"thumbnail"`
-	Image struct {
-		Url string `json:"url"`
-	} `json:"image"`
-	Footer struct {
-		Text    string `json:"text"`
-		IconUrl string `json:"icon_url"`
-	} `json:"footer"`
-}
-
 var goGSMEmbedFooter = discordgo.MessageEmbedFooter{
 	Text: "GoGSM 1.0",
 }
 
-var messageCache = make(map[string]string)
-
 // RefreshServerStatus refreshes the status embeds for all servers
 // TODO: This is too monolithic. It should be broken up into smaller functions
 func RefreshServerStatus(s *discordgo.Session) {
+
+	// Refreshes the Game names if they have expired
+	config.GetGameNames()
 
 	for name, server := range config.ReadConfig().Servers {
 
@@ -87,8 +58,8 @@ func RefreshServerStatus(s *discordgo.Session) {
 				continue
 			}
 
-			if message, ok := messageCache[name]; ok {
-				messageToEdit = message
+			if message, ok := config.GlobalCache.Get(name); ok {
+				messageToEdit = message.(string)
 			} else {
 				err := s.ChannelMessageDelete(server.ChannelID, i2.ID)
 				if err != nil {
@@ -175,9 +146,7 @@ func RefreshServerStatus(s *discordgo.Session) {
 						Inline: true,
 					})
 				}
-
 			}
-
 		}
 		var embed = &discordgo.MessageEmbed{
 			Type:        discordgo.EmbedTypeRich,
@@ -201,7 +170,7 @@ func RefreshServerStatus(s *discordgo.Session) {
 			if er2 != nil {
 				log.Println("Error sending embed: ", er2.Error())
 			} else {
-				messageCache[name] = m.ID
+				config.GlobalCache.Set(name, m.ID, time.Hour*24)
 			}
 		}
 

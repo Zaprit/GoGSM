@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"github.com/BurntSushi/toml"
+	"github.com/patrickmn/go-cache"
 	"os"
 
 	_ "embed"
@@ -10,6 +11,8 @@ import (
 
 // go:embed default.toml
 var defaultConfig string
+
+var GlobalCache *cache.Cache
 
 // Config is the main configuration struct
 type Config struct {

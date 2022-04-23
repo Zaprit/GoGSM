@@ -14,7 +14,7 @@ import (
 
 func main() {
 
-	cache.New(5*time.Minute, 10*time.Minute)
+	config.GlobalCache = cache.New(5*time.Minute, 10*time.Minute)
 
 	conf := config.ReadConfig()
 

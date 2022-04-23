@@ -6,12 +6,19 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 )
 
 var PrettyGameNames = make(map[string]string)
 
-// GetGameNames fetches the game display names from the gamedig github repo
+// GetGameNames fetches the game display names from the gamedig GitHub repo
 func GetGameNames() {
+	cacheItem, exists := GlobalCache.Get("PrettyGameNames")
+	if !exists {
+		PrettyGameNames = cacheItem.(map[string]string)
+		return
+	}
+
 	resp, err := http.Get("https://raw.githubusercontent.com/gamedig/node-gamedig/master/games.txt")
 	if err != nil {
 		log.Println(err)
@@ -35,5 +42,7 @@ func GetGameNames() {
 			PrettyGameNames[parts[0]] = parts[1]
 		}
 	}
+
+	GlobalCache.Set("PrettyGameNames", PrettyGameNames, 10*time.Hour*24)
 
 }
