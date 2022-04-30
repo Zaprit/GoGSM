@@ -5,6 +5,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"log"
 	"strings"
+	"time"
 )
 
 var commands = []*discordgo.ApplicationCommand{
@@ -26,15 +27,17 @@ var commandHandlers = map[string]func(s *discordgo.Session, i *discordgo.Interac
 			return
 		}
 		RefreshServerStatus(s)
-		er2 := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: "Done!",
-			},
-		})
+
+		_, er2 := s.InteractionResponseEdit(i.Interaction, &discordgo.WebhookEdit{Content: "Done!"})
 		if er2 != nil {
 			return
 		}
+		time.AfterFunc(time.Second*5, func() {
+			err := s.InteractionResponseDelete(i.Interaction)
+			if err != nil {
+				return
+			}
+		})
 	},
 }
 
